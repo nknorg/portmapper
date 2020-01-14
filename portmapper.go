@@ -10,7 +10,10 @@ import (
 	goupnp "gitlab.com/NebulousLabs/go-upnp"
 )
 
-var portMapDuration = map[string]time.Duration{"NAT-PMP": 365 * 86400 * time.Second}
+var (
+	NoGatewayFound  = errors.New("no UPnP or NAT-PMP gateway found")
+	portMapDuration = map[string]time.Duration{"NAT-PMP": 365 * 86400 * time.Second}
+)
 
 type PortMapper struct {
 	gateway     interface{}
@@ -31,7 +34,7 @@ func Discover() (*PortMapper, error) {
 			pm.gateway = gonatGateway
 			pm.gatewayType = gonatGateway.Type()
 		} else {
-			return nil, errors.New("no UPnP or NAT-PMP gateway found")
+			return nil, NoGatewayFound
 		}
 	}
 
